@@ -10,6 +10,7 @@
         placeholder="手机号"
         v-model="phone"
         :error="error.phone"
+        :requestCode="requestCode"
         :btnTitle="btnTitle"
         @btn-click="btnClick"
       />
@@ -29,7 +30,7 @@
 
       <!-- 登陆按钮 -->
       <div class="login-btn">
-        <button :disabled="canNotLogin">登录</button>
+        <button :disabled="canNotLogin" @click="login">登录</button>
       </div>
     </div>
   </div>
@@ -44,11 +45,13 @@ export default {
       phone: "",
       code: "",
       error: {
-      },
+      }, //错误信息
       btnTitle: '获取验证码',
+      requestCode: true, //请求验证吗按钮是否禁用
     };
   },
   computed: {
+    // 只有在手机号和验证码表达内都有值的话，登录按钮才能使用
     canNotLogin() {
       if(this.phone && this.code) {
         return false;
@@ -56,11 +59,40 @@ export default {
         return true;
       }
     }
-
   },
   methods: {
+    // 获取验证码
       btnClick() {
-          console.log('获取验证码');
+          if(this.verificationPhone()) {
+            // 发送axios请求
+            let restTime = 5;
+            this.requestCode = false;
+            this.btnTitle = restTime + '秒之后重试';
+            const time = setInterval(() => {
+              if(restTime == 0) {
+                clearInterval(time);
+                this.btnTitle = "点击获取验证码";
+                this.requestCode = true;
+              }else {
+                restTime--;
+                this.btnTitle = restTime + "秒之后重试";
+              }
+            },1000)
+          }
+      },
+      // 登录
+      login() {
+        localStorage.setItem('login',true);
+      },
+      // 验证手机号码
+      verificationPhone() {
+        if(!this.phone) {
+          this.$set(this.error,'phone','手机号不能为空');
+        }else if(!(/^1[3-9]\d{9}$/.test(this.phone))) {
+          this.$set(this.error, 'phone', '手机号格式错误');
+        }else {
+          return true;
+        }
       }
   },
   components: {

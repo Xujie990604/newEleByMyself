@@ -7,7 +7,9 @@
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
     <!-- 在二级子路由下面刷新页面 引入reset.css文jian会加上about前缀？ -->
-    <link rel="stylesheet" href="css/reset.css">
+    <!-- <link rel="stylesheet" href="css/reset.css"> -->
+    <!-- 现在的解决方案就是请求的地址前面加上/根目录，来防止出问题。 -->
+    <link rel="stylesheet" href="/css/reset.css">
     <style>
       html,body {
         height: 100%;

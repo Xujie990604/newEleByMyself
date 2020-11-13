@@ -5,10 +5,10 @@
         :class="{ error: error }"
         :type="type"
         :placeholder="placeholder"
-        :value="xujie"
-        @input="$emit('xiaohan', $event.target.value)"
+        :value="value"
+        @input="$emit('input', $event.target.value)"
       />
-      <button v-if="btnTitle" class="btn" @click="$emit('btn-click')">
+      <button v-if="btnTitle" :disabled="!requestCode"  class="btn" @click="$emit('btn-click')">
         {{ btnTitle }}
       </button>
     </div>
@@ -28,16 +28,13 @@ export default {
       type: String,
       default: "请输入信息",
     },
-    xujie: String,
+    value: String,
     error: {
       type: String,
       default: "",
     },
-    btnTitle: String
-  },
-  model: {
-    prop: 'xujie',
-    event: 'xiaohan'
+    btnTitle: String,
+    requestCode: Boolean,
   }
 };
 </script>

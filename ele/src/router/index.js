@@ -32,7 +32,7 @@ const routes = [
 const router = new VueRouter({
   routes,
   mode: 'history', //使用history模式 必须要使用字符串的形式，不然会出问题
-  base: process.env.BASE_URL, //什么意思???
+  base: '/', //什么意思???基础路由
 })
 
 // 是整个路由对象router上的方法，不是路由映射表routes上的方法
