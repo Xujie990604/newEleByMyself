@@ -9,10 +9,13 @@
     <!-- 在二级子路由下面刷新页面 引入reset.css文jian会加上about前缀？ -->
     <!-- <link rel="stylesheet" href="css/reset.css"> -->
     <!-- 现在的解决方案就是请求的地址前面加上/根目录，来防止出问题。 -->
-    <link rel="stylesheet" href="/css/reset.css">
+    <!-- 还有一个解决方案就是在请求地址的前面加上<%= BASE_URL %>这个webpack提供的变量来代替根目录 -->
+    <link rel="stylesheet" href="<%= BASE_URL %>css/reset.css">
     <link rel="stylesheet" href="/css/iconfont.css">
     <!-- 引入高德地图的的js文件 -->
     <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.13&key=fbff9579feb79019f7a46f22c18ec16f"></script>
+    <!-- 引入fontawesome图标库 -->
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
     <style>
       html,body {
         height: 100%;

@@ -29,7 +29,7 @@ export default {
         // 精确定位成功执行的方法
         function onComplete(data) {
           // data是具体的定位信息  精准定位
-          console.log(data);
+          // console.log(data);
           //把得到的定位信息存储到Vuex中，使用this.$store.dispatch请求，调用actions中的方法
           self.$store.dispatch("setLocation", data);
           self.$store.dispatch("setAddress", data.formattedAddress);
@@ -37,7 +37,7 @@ export default {
         // 精确定位失败执行的方法
         function onError(data) {
           // 定位出错    非精准定位
-          console.log(data);
+          // console.log(data);
           self.getLngLatLocation();
         }
       });
@@ -50,7 +50,7 @@ export default {
         citySearch.getLocalCity(function(status, result) {
           if (status === "complete" && result.info === "OK") {
             // 查询成功，result即为当前所在城市信息
-            console.log(result);
+            // console.log(result);
             AMap.plugin("AMap.Geocoder", function() {
               var geocoder = new AMap.Geocoder({
                 // city 指定进行编码查询的城市，支持传入城市名、adcode 和 citycode
@@ -62,7 +62,7 @@ export default {
               geocoder.getAddress(lnglat, function(status, data) {
                 if (status === "complete" && data.info === "OK") {
                   // result为对应的地理位置详细信息
-                  console.log(data);
+                  // console.log(data);
                   // 使用this.$axios.dispatch方法，把得到的数据存放到Vuex中
                   self.$store.dispatch("setLocation", {
                     addressComponent: {
