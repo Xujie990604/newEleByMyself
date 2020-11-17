@@ -15,7 +15,7 @@
         @btn-click="btnClick"
       />
       <!-- 验证码输入框 -->
-      <input-group 
+      <input-group
         class="input-code"
         type="number"
         placeholder="验证码"
@@ -38,62 +38,89 @@
 
 <script>
 import InputGroup from "../components/InputGroup";
+import { getCode, loginBtn, } from "../network/login";
 export default {
   name: "Login",
   data() {
     return {
       phone: "",
       code: "",
-      error: {
-      }, //错误信息
-      btnTitle: '获取验证码',
+      error: {}, //错误信息
+      btnTitle: "获取验证码",
       requestCode: true, //请求验证吗按钮是否禁用
     };
   },
   computed: {
     // 只有在手机号和验证码表达内都有值的话，登录按钮才能使用
     canNotLogin() {
-      if(this.phone && this.code) {
+      if (this.phone && this.code) {
         return false;
       } else {
         return true;
       }
-    }
+    },
+  },
+  created() {
+
   },
   methods: {
     // 获取验证码
-      btnClick() {
-          if(this.verificationPhone()) {
-            // 发送axios请求
-            let restTime = 5;
-            this.requestCode = false;
-            this.btnTitle = restTime + '秒之后重试';
-            const time = setInterval(() => {
-              if(restTime == 0) {
-                clearInterval(time);
-                this.btnTitle = "点击获取验证码";
-                this.requestCode = true;
-              }else {
-                restTime--;
-                this.btnTitle = restTime + "秒之后重试";
-              }
-            },1000)
-          }
-      },
-      // 登录
-      login() {
-        localStorage.setItem('login',true);
-      },
-      // 验证手机号码
-      verificationPhone() {
-        if(!this.phone) {
-          this.$set(this.error,'phone','手机号不能为空');
-        }else if(!(/^1[3-9]\d{9}$/.test(this.phone))) {
-          this.$set(this.error, 'phone', '手机号格式错误');
-        }else {
-          return true;
-        }
+    btnClick() {
+      if (this.verificationPhone()) {
+        // 发送axios请求
+        // getCode(this.phone)
+        // .then(res => {
+        //   console.log(res);
+          console.log("请求验证码");
+          this.countdown()
+        // })
+        // .catch(err => {
+        //   console.log(err);
+        //   this.$set(this.error, "code", "不能重复请求验证码");
+          
+        // })
       }
+    },
+    // 倒计时的函数
+    countdown() {
+      let restTime = 30;
+      this.requestCode = false;
+      this.btnTitle = restTime + "秒之后重试";
+      const time = setInterval(() => {
+        if (restTime == 0) {
+          clearInterval(time);
+          this.btnTitle = "点击获取验证码";
+          this.requestCode = true;
+        } else {
+          restTime--;
+          this.btnTitle = restTime + "秒之后重试";
+        }
+      }, 1000);
+    },
+    // 登录
+    login() {
+      // 发送登录的请求
+      // loginBtn(this.phone, this.code)
+      // .then((result) => {
+      //   console.log(result);
+      console.log("登录成功");
+      localStorage.setItem("login", true);
+      this.$router.push("/")
+      // }).catch((err) => {
+      //   console.log(err);
+      // this.$set(this.error, "code", "验证码有误");
+      // });
+    },
+    // 验证手机号码
+    verificationPhone() {
+      if (!this.phone) {
+        this.$set(this.error, "phone", "手机号不能为空");
+      } else if (!/^1[3-9]\d{9}$/.test(this.phone)) {
+        this.$set(this.error, "phone", "手机号格式错误");
+      } else {
+        return true;
+      }
+    },
   },
   components: {
     InputGroup,

@@ -6,33 +6,55 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: () => import('../views/Home.vue'), // 懒加载的定义方式
+    // name: 'index',
+    component: () => import('../views/Index.vue'),
+    children: [
+      {
+        path: "",
+        redirect: '/home'
+      },
+      {
+        path: '/home',
+        name: 'home',
+        component: () => import('../views/Home.vue')
+      },
+      {
+        path: '/order',
+        name: 'order',
+        component: () => import('../views/Order.vue')
+      },
+      {
+        path: '/me',
+        name: 'me',
+        component: () => import('../views/Me.vue')
+      }
+    ]
   },
   {
     path: '/about',
-    name: 'About',
+    name: 'about',
     component: () => import('../views/About.vue'),
     children: [
       {
         path: 'first',//使用children属性进行书写路由的时候。不必再写上父路由的路径
         // 在about路由的子路由first下面刷新。加载reset.css会在前面加上 /about
-        name: 'First',
+        name: 'first',
         component: () => import('../views/First.vue')
       }
     ]
   },
   {
     path: '/login',
-    name: 'Login',
+    name: 'login',
     component: () => import('../views/Login')
   }
 ]
 
 const router = new VueRouter({
   routes,
+  linkActiveClass: 'active',
   mode: 'history', //使用history模式 必须要使用字符串的形式，不然会出问题
-  base: '/', //什么意思???基础路由
+  // base: '/xujie/', //什么意思???基础路由，作用是什么
 })
 
 // 是整个路由对象router上的方法，不是路由映射表routes上的方法
