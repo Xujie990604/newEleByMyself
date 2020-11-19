@@ -38,7 +38,7 @@
 
 <script>
 import InputGroup from "../components/InputGroup";
-import { getCode, loginBtn, } from "../network/login";
+import { getCode, loginBtn } from "../network/login";
 export default {
   name: "Login",
   data() {
@@ -61,13 +61,21 @@ export default {
     },
   },
   created() {
-
   },
   methods: {
     // 获取验证码
     btnClick() {
       if (this.verificationPhone()) {
         // 发送axios请求
+        // 使用axios多拼接一个api就行
+        // this.$axios
+        //   .post("api/posts/sms_send", {
+        //     phone: this.phone,
+        //   })
+        //   .then((res) => {
+        //     console.log(res);
+        //   });
+        // 二次包装axios不行
         // getCode(this.phone)
         // .then(res => {
         //   console.log(res);
@@ -77,7 +85,7 @@ export default {
         // .catch(err => {
         //   console.log(err);
         //   this.$set(this.error, "code", "不能重复请求验证码");
-          
+
         // })
       }
     },
@@ -105,7 +113,7 @@ export default {
       //   console.log(result);
       console.log("登录成功");
       localStorage.setItem("login", true);
-      this.$router.push("/")
+      this.$router.push("/");
       // }).catch((err) => {
       //   console.log(err);
       // this.$set(this.error, "code", "验证码有误");

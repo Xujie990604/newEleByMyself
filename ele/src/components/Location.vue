@@ -1,5 +1,5 @@
 <template>
-    <div class="location">
+    <div>
         <div class="title">当前定位</div>
         <div class="des">
             <i class="fa fa-location-arrow"></i>
@@ -12,7 +12,10 @@
 export default {
     name: 'Location',
     props: {
-        address: String
+        address: {
+          type: String,
+          default: "tangshan"
+        }
     }
 }
 </script>

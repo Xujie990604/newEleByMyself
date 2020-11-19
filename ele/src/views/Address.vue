@@ -3,7 +3,7 @@
     <Header :isLeft="true" title="选择收货地址" />
     <div class="city-search">
       <div class="search">
-        <span class="city">
+        <span class="city" @click="$router.push('/city')">
           {{ city }}
           <i class="fa fa-angle-down"></i>
         </span>
@@ -18,7 +18,7 @@
     </div>
     <div class="area" v-if="areaList">
       <ul class="area-list" v-for="(item,index) in areaList" :key="`area-list${index}`">
-        <li>
+        <li @click="selectAddress(item)">
           <h4>{{item.name}}</h4>
           <p>{{item.district}}{{item.address}}</p>
         </li>
@@ -38,15 +38,17 @@ export default {
     return {
       city: "",
       searchValue: "",
-      areaList: [],
+      areaList: [], //根据关键字搜索到的城市数组
     };
   },
   computed: {
+    // 从vuex中拿到的当前详细地址
     address() {
       return this.$store.getters.address;
     },
   },
   watch: {
+    // 表单数据改变触发searchCity函数
     searchValue() {
       this.debounceSearchCity();
     },
@@ -56,6 +58,7 @@ export default {
       this.debounceSearchCity = debounce(this.searchCity, 1000);
   },
   methods: {
+    // 根据关键字进行搜索地区
     searchCity() {
       const self = this;
       AMap.plugin("AMap.Autocomplete", function() {
@@ -69,7 +72,13 @@ export default {
         });
       });
     },
+    // 点击具体的地区，携带参数回到home中
+    selectAddress(item) {
+      this.$store.dispatch("setAddress", item.district + item.address);
+      this.$router.push("/home")
+    }
   },
+  // 路由守卫，接收city属性
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       vm.city = to.query.city;
