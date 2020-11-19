@@ -1,50 +1,81 @@
 <template>
-    <div class="area" ref="areaScroll" v-if="cityInfo">
-        <div class="scroll-wrap">
-            <div class="hot-wrap">
-                <div class="title">热门城市</div>
-                <ul class="hot-city">
-                    <li v-for="(city,index) in cityInfo.hotCities" :key="`hotCity${index}`">
-                        {{city.name}}
-                    </li>
-                </ul>
-            </div>
-            <div class="city-wrap">
-                <div class="city-content" v-for="(item,index) in keys" :key="`keys${index}`">
-                   <div class="title">{{item}}</div>
-                   <ul>
-                       <li v-for="(item,index) in cityInfo[item]" :key="`city${index}`">
-                           {{item.name}}
-                       </li>
-                   </ul>
-                </div>
-            </div>
+  <div class="area" ref="areaScroll" v-if="cityInfo">
+    <div class="scroll-wrap">
+      <div class="hot-wrap select-city">
+        <div class="title ">热门城市</div>
+        <ul class="hot-city">
+          <li
+            v-for="(city, index) in cityInfo.hotCities"
+            :key="`hotCity${index}`"
+            @click="$emit('select-city', city.name)"
+          >
+            {{ city.name }}
+          </li>
+        </ul>
+      </div>
+      <div class="city-wrap">
+        <div
+          class="city-content select-city"
+          v-for="(item, index) in keys"
+          :key="`keys${index}`"
+          
+        >
+          <div class="title">{{ item }}</div>
+          <ul>
+            <li v-for="(item, index) in cityInfo[item]" :key="`city${index}`"
+            @click="$emit('select-city', item.name)"
+            >
+              {{ item.name }}
+            </li>
+          </ul>
         </div>
-
+      </div>
     </div>
+    <div class="area-keys">
+      <ul>
+        <li @click="selectKeys(0)">#</li>
+        <li
+          v-for="(item, index) in keys"
+          :key="`keys${index}`"
+          @click="selectKeys(index + 1)"
+        >
+          {{ item }}
+        </li>
+      </ul>
+    </div>
+  </div>
 </template>
 
 <script>
-import BScroll from 'better-scroll';
+import BScroll from "better-scroll";
 export default {
-    name: 'Alphabet',
-    data() {
-        return {
-            scroll: null,
-        }
+  name: "Alphabet",
+  data() {
+    return {
+      scroll: null,
+    };
+  },
+  props: {
+    cityInfo: Object,
+    keys: Array,
+  },
+  methods: {
+    initScroll() {
+      this.scroll = new BScroll(this.$refs.areaScroll, {
+        click: true,
+      });
     },
-    props: {
-        cityInfo: Object,
-        keys: Array
+    // 点击右边的索引进行跳转
+    selectKeys(index) {
+        // 获取所有的DOM
+        const selectCity = this.$refs.areaScroll.getElementsByClassName("select-city");
+        // 根据传进来的index来获取对应的DOM
+        let el = selectCity[index];
+        // scroll对象上带有的方法，跳转到指定的DOM上
+        this.scroll.scrollToElement(el, 250);
     },
-    methods: {
-        initScroll() {
-            this.scroll = new BScroll(this.$refs.areaScroll, {
-                click: true
-            })
-        }
-    }
-}
+  },
+};
 </script>
 
 <style scoped>

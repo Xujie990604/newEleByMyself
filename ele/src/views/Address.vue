@@ -14,7 +14,7 @@
           placeholder="小区/写字楼/学校等"
         />
       </div>
-      <Location :address="address" />
+      <Location @click="selectAddress" :address="address" />
     </div>
     <div class="area" v-if="areaList">
       <ul class="area-list" v-for="(item,index) in areaList" :key="`area-list${index}`">
@@ -67,14 +67,15 @@ export default {
         };
         var autoComplete = new AMap.Autocomplete(autoOptions);
         autoComplete.search(self.searchValue, function(status, result) {
-          console.log(result.tips);
           self.areaList = result.tips;
         });
       });
     },
     // 点击具体的地区，携带参数回到home中
     selectAddress(item) {
-      this.$store.dispatch("setAddress", item.district + item.address);
+      if(item) {
+        this.$store.dispatch("setAddress", item.district + item.address + item.name);
+      }
       this.$router.push("/home")
     }
   },

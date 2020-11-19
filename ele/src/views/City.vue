@@ -1,5 +1,6 @@
 <template>
   <div class="city">
+    <!-- 搜索框 -->
     <div class="search-wrap">
       <div class="search">
         <i class="fa fa-search"></i>
@@ -9,11 +10,25 @@
         取消
       </button>
     </div>
-    <div style="height: 100%;">
+    <!-- 当前定位组件和按照字母顺序显示的城市名称 -->
+    <div style="height: 100%;" v-if="filterCities.length == 0">
       <div class="location">
-        <Location :address="city" />
+        <Location @click="selectCity(city)" :address="city" />
       </div>
-      <Alphabet :cityInfo="cityInfo" ref="allCity" :keys="keys" />
+      <Alphabet
+        @select-city="selectCity"
+        :cityInfo="cityInfo"
+        ref="allCity"
+        :keys="keys"
+      />
+    </div>
+    <!-- 根据检索得到的city的数据  -->
+    <div class="search-list" v-else>
+      <ul>
+        <li v-for="(item, index) in filterCities" :key="`filter${index}`" @click="selectCity(item)">
+          {{item}}
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -22,14 +37,17 @@
 import Location from "../components/Location";
 import Alphabet from "../components/Alphabet";
 
-import { getCityInfo } from '../network/city.js';
+import { getCityInfo } from "../network/city.js";
+import { debounce } from "../common/util";
 export default {
   name: "City",
   data() {
     return {
       cityValue: "",
       cityInfo: null,
-      keys: []
+      keys: [],
+      allCities: [],
+      filterCities: [],
     };
   },
   computed: {
@@ -40,29 +58,57 @@ export default {
       );
     },
   },
-  mounted(){
+  watch: {
+    cityValue() {
+      this.debounceFilterCity();
+    },
+  },
+  created() {
+    this.debounceFilterCity = debounce(this.filterCity, 1000);
+  },
+  mounted() {
     // 进行城市接口的调用和数据的处理
-      this.getCityInfo()
+    this.getCityInfo();
   },
   methods: {
-      getCityInfo() {
-        // 调用二次包装的axios请求
-          getCityInfo()
-          .then(res => {
-             this.cityInfo = res.data;
-             this.keys = Object.keys(res.data)
-             this.keys.pop();
-             this.keys.sort();
-            //  scroll的关键在于这里，等到DOM更新完成之后再进行scroll的初始化。
-             this.$nextTick(() => {
-               this.$refs.allCity.initScroll();
-             })
-          })
-      },
+    getCityInfo() {
+      // 调用二次包装的axios请求
+      getCityInfo().then((res) => {
+        this.cityInfo = res.data;
+        this.keys = Object.keys(res.data);
+        this.keys.pop();
+        this.keys.sort();
+        //  scroll的关键在于这里，等到DOM更新完成之后再进行scroll的初始化。
+        this.$nextTick(() => {
+          this.$refs.allCity.initScroll();
+        });
+        //  获取所有的城市名字
+        this.keys.forEach((key) => {
+          this.cityInfo[key].forEach((city) => {
+            this.allCities.push(city.name);
+          });
+        });
+      });
+    },
+    // 点击具体的city跳转到address页面
+    selectCity(city) {
+      this.$router.push({
+        path: "/address",
+        query: {
+          city: city,
+        },
+      });
+    },
+    // 根据关键字检索城市
+    filterCity() {
+      this.filterCities = this.allCities.filter((city) =>
+        city.indexOf(this.cityValue) !== -1
+      );
+    },
   },
   components: {
     Location,
-    Alphabet
+    Alphabet,
   },
 };
 </script>
