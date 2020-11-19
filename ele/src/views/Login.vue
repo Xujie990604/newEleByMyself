@@ -38,7 +38,8 @@
 
 <script>
 import InputGroup from "../components/InputGroup";
-import { getCode, loginBtn } from "../network/login";
+// 因为无法设置跨域。所以不能使用axios的二次封装。
+// import { getCode, loginBtn } from "../network/login";
 export default {
   name: "Login",
   data() {
@@ -60,33 +61,25 @@ export default {
       }
     },
   },
-  created() {
-  },
+  created() {},
   methods: {
     // 获取验证码
     btnClick() {
+      this.error = {};
       if (this.verificationPhone()) {
         // 发送axios请求
-        // 使用axios多拼接一个api就行
-        // this.$axios
-        //   .post("api/posts/sms_send", {
-        //     phone: this.phone,
-        //   })
-        //   .then((res) => {
-        //     console.log(res);
-        //   });
-        // 二次包装axios不行
-        // getCode(this.phone)
-        // .then(res => {
-        //   console.log(res);
-          console.log("请求验证码");
-          this.countdown()
-        // })
-        // .catch(err => {
-        //   console.log(err);
-        //   this.$set(this.error, "code", "不能重复请求验证码");
-
-        // })
+        this.$axios
+          .post("api/posts/sms_send", {
+            phone: this.phone,
+          })
+          .then((res) => {
+            console.log(res);
+            this.countdown();
+          })
+          .catch((err) => {
+            console.log(err);
+            this.$set(this.error, "code", "验证码获取失败");
+          });
       }
     },
     // 倒计时的函数
@@ -107,17 +100,23 @@ export default {
     },
     // 登录
     login() {
-      // 发送登录的请求
-      // loginBtn(this.phone, this.code)
-      // .then((result) => {
-      //   console.log(result);
-      console.log("登录成功");
-      localStorage.setItem("login", true);
-      this.$router.push("/");
-      // }).catch((err) => {
-      //   console.log(err);
-      // this.$set(this.error, "code", "验证码有误");
-      // });
+      this.error = {};
+      if (this.verificationPhone()) {
+        this.$axios
+          .post("api/posts/sms_back", {
+            phone: this.phone,
+            code: this.code,
+          })
+          .then((res) => {
+            console.log(res);
+            localStorage.setItem("login", true);
+            this.$router.push("/");
+          })
+          .catch((err) => {
+            console.log(err);
+            this.$set(this.error, "code", "验证码有误");
+          });
+      }
     },
     // 验证手机号码
     verificationPhone() {
