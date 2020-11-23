@@ -37,7 +37,7 @@
 import Location from "../components/Location";
 import Alphabet from "../components/Alphabet";
 
-import { getCityInfo } from "../network/city.js";
+// import { getCityInfo } from "../network/city.js";
 import { debounce } from "../common/util";
 export default {
   name: "City",
@@ -73,7 +73,8 @@ export default {
   methods: {
     getCityInfo() {
       // 调用二次包装的axios请求
-      getCityInfo().then((res) => {
+      this.$axios('api/posts/cities')
+      .then((res) => {
         this.cityInfo = res.data;
         this.keys = Object.keys(res.data);
         this.keys.pop();

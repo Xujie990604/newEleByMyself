@@ -1,44 +1,107 @@
 <template>
   <div class="home">
+    <!-- header -->
     <div class="header">
-      <div class="header">
-        <div class="address-map"  @click="$router.push({path: '/address', query: {city: city}})">
-          <i class="fa fa-map-marker"></i>
-          <span>{{address}}</span>
-          <i class="fa fa-sort-desc"></i>
-        </div>
-        <div class="shop-search">
-          <i class="fa fa-search"></i>
-          搜索商家，商家名称
-        </div>
+      <div
+        class="address-map"
+        @click="$router.push({ path: '/address', query: { city: city } })"
+      >
+        <i class="fa fa-map-marker"></i>
+        <span>{{ address }}</span>
+        <i class="fa fa-sort-desc"></i>
       </div>
     </div>
+
+    <!-- search -->
+    <div class="search-wrap">
+      <div class="shop-search">
+        <i class="fa fa-search"></i>
+        搜索商家，商家名称
+      </div>
+    </div>
+
+    <!-- 两个轮播图 -->
+    <div id="container">
+      <!-- 轮播图 -->
+      <mt-swipe :auto="4000" class="swiper" >
+        <mt-swipe-item v-for="(item, index) in swiperItems" :key="index">
+          <img :src="item" alt="轮播图">
+        </mt-swipe-item>
+      </mt-swipe>
+      <!-- 分类 -->
+      <mt-swipe :auto="0" class="entries" >
+        <mt-swipe-item class="entry-wrap" v-for="(item, i) in entries" :key="i">
+          <div class="foodentry" v-for="(entry, index) in item" :key="index">
+            <div class="img-wrap">
+              <img :src="entry.image" alt="选择分类">
+            </div>
+            <span>{{entry.name}}</span>
+          </div>
+        </mt-swipe-item>
+      </mt-swipe>
+    </div>
+
+    <!-- 推荐商家 -->
+    <div class="shoplist-title">推荐商家</div>
+
+    <filter-view :filterData="filterData" ></filter-view>
   </div>
 </template>
 
 <script>
 // @ 重定向到 src
+import FilterView from '../components/FilterView';
+import { Swipe, SwipeItem } from "mint-ui";
 export default {
-  name: 'Home',
+  name: "Home",
   data() {
     return {
-      
-    }
+      swiperItems: [],
+      entries: [],
+      filterData: null,
+    };
   },
   computed: {
     address() {
       return this.$store.getters.address;
     },
     city() {
-      return this.$store.getters.location.addressComponent.city || 
-      this.$store.getters.location.addressComponent.province
+      return (
+        this.$store.getters.location.addressComponent.city ||
+        this.$store.getters.location.addressComponent.province
+      );
+    },
+  },
+  created() {
+    // 获取数据
+    this.getData()
+  },
+  mounted() {},
+  methods: {
+    getData() {
+      this.$axios("api/profile/shopping")
+      .then(res => {
+        // console.log(res.data);
+        this.swiperItems = res.data.swipeImgs;
+        this.entries = res.data.entries;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+
+      this.$axios("api/profile/filter")
+      .then(res => {
+        console.log(res.data);
+        this.filterData = res.data;
+      })
     }
   },
-  mounted() {
-  },
   components: {
+    Swipe,
+    SwipeItem,
+    FilterView
   },
-}
+};
 </script>
 
 <style scoped>
@@ -68,7 +131,7 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.search-wrap, .shop-search {
+.search-wrap .shop-search {
   margin-top: 10px;
   background-color: #fff;
   padding: 10px 0;
@@ -76,5 +139,80 @@ export default {
   text-align: center;
   color: #aaa;
 }
+.search-wrap {
+  position: sticky;
+  top: 0px;
+  z-index: 999;
+  box-sizing: border-box;
+}
+.swiper {
+  height: 100px;
+}
+.swiper img {
+  width: 100%;
+  height: 100px;
+}
 
+.entries {
+  background: #fff;
+  height: 47.2vw;
+  text-align: center;
+  overflow: hidden;
+}
+.foodentry {
+  width: 20%;
+  float: left;
+  position: relative;
+  margin-top: 2.933333vw;
+}
+.foodentry .img-wrap {
+  position: relative;
+  display: inline-block;
+  width: 12vw;
+  height: 12vw;
+}
+.img-wrap img {
+  width: 100%;
+  height: 100%;
+}
+.foodentry span {
+  display: block;
+  color: #666;
+  font-size: 0.32rem;
+}
+/* 推荐商家 */
+.shoplist-title {
+  display: flex;
+  align-items: flex;
+  justify-content: center;
+  height: 9.6vw;
+  line-height: 9.6vw;
+  font-size: 16px;
+  color: #333;
+  background: #fff;
+}
+.shoplist-title:after,
+.shoplist-title:before {
+  display: block;
+  content: "一";
+  width: 5.333333vw;
+  height: 0.266667vw;
+  color: #999;
+}
+.shoplist-title:before {
+  margin-right: 3.466667vw;
+}
+.shoplist-title:after {
+  margin-left: 3.466667vw;
+}
+.fixedview {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 999;
+}
+.mint-loadmore {
+  height: calc(100% - 95px);
+  overflow: auto;
+}
 </style>
