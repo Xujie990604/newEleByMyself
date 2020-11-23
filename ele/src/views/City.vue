@@ -56,7 +56,7 @@ export default {
         this.$store.getters.location.addressComponent.city ||
         this.$store.getters.location.addressComponent.province
       );
-    },
+    }
   },
   watch: {
     cityValue() {
