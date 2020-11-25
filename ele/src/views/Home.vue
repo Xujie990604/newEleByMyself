@@ -13,7 +13,7 @@
     </div>
 
     <!-- search -->
-    <div class="search-wrap">
+    <div class="search-wrap" :class="{ 'fixed-view': sortFixed }">
       <div class="shop-search">
         <i class="fa fa-search"></i>
         搜索商家，商家名称
@@ -23,19 +23,19 @@
     <!-- 两个轮播图 -->
     <div id="container">
       <!-- 轮播图 -->
-      <mt-swipe :auto="4000" class="swiper" >
+      <mt-swipe :auto="4000" class="swiper">
         <mt-swipe-item v-for="(item, index) in swiperItems" :key="index">
-          <img :src="item" alt="轮播图">
+          <img :src="item" alt="轮播图" />
         </mt-swipe-item>
       </mt-swipe>
       <!-- 分类 -->
-      <mt-swipe :auto="0" class="entries" >
+      <mt-swipe :auto="0" class="entries">
         <mt-swipe-item class="entry-wrap" v-for="(item, i) in entries" :key="i">
           <div class="foodentry" v-for="(entry, index) in item" :key="index">
             <div class="img-wrap">
-              <img :src="entry.image" alt="选择分类">
+              <img :src="entry.image" alt="选择分类" />
             </div>
-            <span>{{entry.name}}</span>
+            <span>{{ entry.name }}</span>
           </div>
         </mt-swipe-item>
       </mt-swipe>
@@ -43,14 +43,27 @@
 
     <!-- 推荐商家 -->
     <div class="shoplist-title">推荐商家</div>
-
-    <filter-view :filterData="filterData" ></filter-view>
+    <!-- 导航栏和筛选栏 -->
+    <filter-view
+      :filterData="filterData"
+      @home-fixed="homeFixed"
+      @update="update"
+    ></filter-view>
+    <!-- 商家列表 -->
+    <div class="shop-list">
+      <index-shop
+        v-for="(item, index) in restaurants"
+        :key="index"
+        :restaurant="item.restaurant"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 // @ 重定向到 src
-import FilterView from '../components/FilterView';
+import FilterView from "../components/FilterView";
+import IndexShop from "../components/IndexShop";
 import { Swipe, SwipeItem } from "mint-ui";
 export default {
   name: "Home",
@@ -59,6 +72,10 @@ export default {
       swiperItems: [],
       entries: [],
       filterData: null,
+      sortFixed: false,
+      page: 1,
+      size: 5,
+      restaurants: [],
     };
   },
   computed: {
@@ -74,32 +91,48 @@ export default {
   },
   created() {
     // 获取数据
-    this.getData()
+    this.getData();
   },
   mounted() {},
   methods: {
     getData() {
+      // 轮播图的数据
       this.$axios("api/profile/shopping")
-      .then(res => {
+        .then((res) => {
+          // console.log(res.data);
+          this.swiperItems = res.data.swipeImgs;
+          this.entries = res.data.entries;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      // 排序筛选的数据
+      this.$axios("api/profile/filter").then((res) => {
         // console.log(res.data);
-        this.swiperItems = res.data.swipeImgs;
-        this.entries = res.data.entries;
-      })
-      .catch(err => {
-        console.log(err);
-      })
-
-      this.$axios("api/profile/filter")
-      .then(res => {
-        console.log(res.data);
         this.filterData = res.data;
-      })
-    }
+      });
+      // 请求的商家信息
+      this.$axios
+        .post(`api/profile/restaurants/${this.page}/${this.size}`)
+        .then((res) => {
+          console.log(res.data);
+          this.restaurants = res.data;
+        });
+    },
+    // 子组件触发的事件，显示蒙版
+    homeFixed(boolean) {
+      this.sortFixed = boolean;
+    },
+    // 根据自组价提供的田间进行数据的重新获取
+    update(condation) {
+      console.log(condation);
+    },
   },
   components: {
     Swipe,
     SwipeItem,
-    FilterView
+    FilterView,
+    IndexShop,
   },
 };
 </script>
@@ -205,11 +238,15 @@ export default {
 .shoplist-title:after {
   margin-left: 3.466667vw;
 }
-.fixedview {
+.fixed-view {
   width: 100%;
   position: fixed;
   top: 0;
   z-index: 999;
+}
+
+.fixed-view.search-wrap {
+  padding-top: 5px;
 }
 .mint-loadmore {
   height: calc(100% - 95px);
