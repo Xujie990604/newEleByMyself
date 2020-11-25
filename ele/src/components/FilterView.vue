@@ -1,50 +1,70 @@
 <template>
-  <div :class="{open: isSort || isScreen}" @click.self="hideBold">
+  <div :class="{ open: isSort || isScreen }" @click.self="hideBold">
     <!-- 导航 -->
     <div v-if="filterData" class="filter-wrap">
-    <aside class="filter">
-      <div
-        class="filter-nav"
-        :class="{ 'filter-bold': currentIndex == index }"
-        v-for="(item, index) in filterData.navTab"
-        :key="index"
-        @click="filterSort(index)"
-      >
-        <span>{{ item.name }}</span>
-        <i v-if="item.icon" :class="`fa fa-${item.icon}`"></i>
+      <aside class="filter">
+        <div
+          class="filter-nav"
+          :class="{ 'filter-bold': currentIndex == index }"
+          v-for="(item, index) in filterData.navTab"
+          :key="index"
+          @click="filterSort(index)"
+        >
+          <span>{{ item.name }}</span>
+          <i v-if="item.icon" :class="`fa fa-${item.icon}`"></i>
+        </div>
+      </aside>
+    </div>
+
+    <!-- 排序 -->
+    <div class="filter-extend" v-if="isSort">
+      <ul>
+        <li
+          v-for="(item, index) in filterData.sortBy"
+          :key="index"
+          @click="selectSort(item, index)"
+        >
+          <span :class="{ 'select-name': index == selectIndex }">{{
+            item.name
+          }}</span>
+          <i v-show="index == selectIndex" class="fa fa-check"></i>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 筛选 -->
+    <div v-if="isScreen" class="filter-extend">
+      <div class="filter-sort">
+        <div
+          class="more-filter"
+          v-for="(screen, index) in filterData.screenBy"
+          :key="index"
+        >
+          <p class="title">{{ screen.title }}</p>
+          <ul>
+            <li
+              :class="{ selected: item.select }"
+              v-for="(item, i) in screen.data"
+              :key="i"
+              @click="selectScreen(item, screen)"
+            >
+              <img v-if="item.icon" :src="item.icon" alt="筛选" />
+              <span>{{ item.name }}</span>
+            </li>
+          </ul>
+        </div>
       </div>
-    </aside>
-  </div>
-
-  <!-- 排序 -->
-  <div class="filter-extend" v-if="isSort">
-    <ul>
-      <li v-for="(item, index) in filterData.sortBy" :key="index" @click="selectSort(item, index)">
-        <span :class="{'select-name': index == selectIndex}">{{item.name}}</span>
-        <i v-show="index == selectIndex" class="fa fa-check" ></i>
-      </li>
-    </ul>
-  </div>
-
-  <!-- 筛选 -->
-  <div v-if="isScreen" class="filter-extend">
-    <div class="filter-sort">
-      <div class="more-filter" v-for="(screen, index) in filterData.screenBy" :key="index">
-        <p class="title">{{screen.title}}</p>
-        <ul>
-          <li :class="{selected: item.select}" v-for="(item, i) in screen.data" :key="i" @click="selectScreen(item, screen)">
-            <img v-if="item.icon" :src="item.icon" alt="筛选">
-            <span>{{item.name}}</span>
-          </li>
-        </ul>
+      <!-- 确认和清空按钮 -->
+      <div class="more-filter-btn">
+        <span
+          class="more-filter-clear"
+          :class="{ edit: edit }"
+          @click="clearFilter"
+          >清空</span
+        >
+        <span class="more-filter-ok" @click="filterOk">筛选</span>
       </div>
     </div>
-    <!-- 确认和清空按钮 -->
-    <div class="more-filter-btn">
-      <span class="more-filter-clear" :class="{edit: edit}" @click="clearFilter">清空</span>
-      <span class="more-filter-ok" @click="filterOk">筛选</span>
-    </div>
-  </div>
   </div>
 </template>
 
@@ -56,7 +76,7 @@ export default {
       currentIndex: 0,
       isSort: false,
       selectIndex: 0,
-      isScreen: false
+      isScreen: false,
     };
   },
   props: {
@@ -66,23 +86,23 @@ export default {
     // 判断筛选条件是否有条件被选中，清空按钮是否可见
     edit() {
       let items = [];
-      this.filterData.screenBy.forEach(screen => {
-        screen.data.forEach(item => {
-           items.push(item)
-        })
-      })
-      return items.some(item => {
+      this.filterData.screenBy.forEach((screen) => {
+        screen.data.forEach((item) => {
+          items.push(item);
+        });
+      });
+      return items.some((item) => {
         return item.select == true;
-      })
-    }
+      });
+    },
   },
   methods: {
     // 点击导航栏时触发的函数
     filterSort(index) {
       this.currentIndex = index;
-      switch(index) {
+      switch (index) {
         case 0:
-          this.$emit('home-fixed', true)
+          this.$emit("home-fixed", true);
           this.isSort = true;
           this.isScreen = false;
           break;
@@ -97,15 +117,15 @@ export default {
         case 3:
           this.isScreen = true;
           this.isSort = false;
-          this.$emit('home-fixed', true)
+          this.$emit("home-fixed", true);
           break;
-        default: 
-            break;
+        default:
+          break;
       }
     },
     // 点击隐藏蒙版
     hideBold() {
-      this.$emit('home-fixed', false)
+      this.$emit("home-fixed", false);
       this.isSort = false;
       this.isScreen = false;
     },
@@ -114,43 +134,42 @@ export default {
       this.selectIndex = index;
       this.filterData.navTab[0].name = this.filterData.sortBy[index].name;
       this.hideBold();
-      this.$emit('update', item.code)
+      this.$emit("update", item.code);
     },
     // 点击筛选按钮里面具体的选项触发的函数
     selectScreen(item, screen) {
-      if(screen.id == "MPI") {
+      if (screen.id == "MPI") {
         item.select = !item.select;
-      }else {
-        screen.data.forEach(item => {
+      } else {
+        screen.data.forEach((item) => {
           item.select = false;
         });
         item.select = !item.select;
       }
-      
     },
     // 清空筛选条件按钮
     clearFilter() {
-      this.filterData.screenBy.forEach(screen => {
-        screen.data.forEach(item => {
-           item.select = false;
-        })
-      })
+      this.filterData.screenBy.forEach((screen) => {
+        screen.data.forEach((item) => {
+          item.select = false;
+        });
+      });
     },
     // 确定筛选按钮
     filterOk() {
       let screenData = {
-        MPI: '',
-        offer: '',
-        per: ''
-      }
+        MPI: "",
+        offer: "",
+        per: "",
+      };
       let mpiStr = "";
-      this.filterData.screenBy.forEach(screen => {
-        screen.data.forEach(item => {
+      this.filterData.screenBy.forEach((screen) => {
+        screen.data.forEach((item) => {
           if (item.select) {
             // 两种情况 单选 多选
             if (screen.id !== "MPI") {
-              //单选
-              screenData[screen.id] = item.code;
+              //单选 但是单选里面并没有code这条属性
+              // screenData[screen.id] = item.code;
             } else {
               // 多选
               mpiStr += item.code + ",";
@@ -159,10 +178,9 @@ export default {
           }
         });
       });
-      console.log(screenData);
-      this.$emit('update', screenData);
+      this.$emit("update", screenData);
       this.hideBold();
-    }
+    },
   },
 };
 </script>
@@ -172,7 +190,7 @@ export default {
   background: #fff;
   position: sticky;
   top: 54px;
-  z-index: 10;
+  z-index: 100;
 }
 .filter {
   position: relative;

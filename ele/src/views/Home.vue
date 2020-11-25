@@ -49,14 +49,25 @@
       @home-fixed="homeFixed"
       @update="update"
     ></filter-view>
-    <!-- 商家列表 -->
-    <div class="shop-list">
-      <index-shop
-        v-for="(item, index) in restaurants"
-        :key="index"
-        :restaurant="item.restaurant"
-      />
-    </div>
+    <!-- mint ui自带的上拉刷新和下拉加载组件 -->
+    <mt-loadmore
+      :top-method="loadTop"
+      :bottom-method="loadBottom"
+      :bottom-all-loaded="allLoaded"
+      :auto-fill="false"
+      :bottom-pull-text="bottomPullText"
+      :top-pull-text="topPullText"
+      ref="loadmore"
+    >
+      <!-- 商家列表 -->
+      <div class="shop-list">
+        <index-shop
+          v-for="(item, index) in restaurants"
+          :key="index"
+          :restaurant="item.restaurant"
+        />
+      </div>
+    </mt-loadmore>
   </div>
 </template>
 
@@ -64,7 +75,7 @@
 // @ 重定向到 src
 import FilterView from "../components/FilterView";
 import IndexShop from "../components/IndexShop";
-import { Swipe, SwipeItem } from "mint-ui";
+import { Swipe, SwipeItem, Loadmore } from "mint-ui";
 export default {
   name: "Home",
   data() {
@@ -76,6 +87,10 @@ export default {
       page: 1,
       size: 5,
       restaurants: [],
+      allLoaded: false, //是否全部加载完毕 属性值为true，则不会上拉加载更多
+      bottomPullText: "上拉加载更多", //组价的上拉底部的文案
+      topPullText: "下拉进行刷新", //组件的下拉进行刷新的文案
+      data: null, //按照条件进行筛选的时候，post带的参数
     };
   },
   computed: {
@@ -111,26 +126,65 @@ export default {
         // console.log(res.data);
         this.filterData = res.data;
       });
-      // 请求的商家信息
-      this.$axios
-        .post(`api/profile/restaurants/${this.page}/${this.size}`)
-        .then((res) => {
-          console.log(res.data);
-          this.restaurants = res.data;
-        });
+      // 触发mint ui的loadTop函数进行数据的初始化加载
+      this.loadTop();
     },
     // 子组件触发的事件，显示蒙版
     homeFixed(boolean) {
       this.sortFixed = boolean;
     },
-    // 根据自组价提供的田间进行数据的重新获取
-    update(condation) {
-      console.log(condation);
+    // 根据组件提供的条件进行数据的重新获取
+    update(condition) {
+      let data = {
+        condition
+      }
+      this.data = data;
+      this.loadTop()
+    },
+    // 下拉刷新函数
+    loadTop() {
+      // 每次进行下拉的时候，需要重置一些属性
+      this.page = 1;
+      this.allLoaded = false;
+      this.bottomPullText = "上拉加载更多";
+      // 获取商家的信息
+      this.$axios
+        .post(`api/profile/restaurants/${this.page}/${this.size}`,this.data)
+        .then((res) => {
+          // 每次下拉刷新的时候，这个组件是不会自动的停止方法的
+          // 需要在合适的地方手动的调用loadmore.onTopLoaded()这个函数来结束该方法。
+          this.$refs.loadmore.onTopLoaded();
+          this.restaurants = res.data;
+        });
+    },
+    // 上拉加载
+    loadBottom() {
+        this.page++;
+        this.$axios
+          .post(`api/profile/restaurants/${this.page}/${this.size}`)
+          .then((res) => {
+            // 每次上拉加载的时候，这个组件是不会自动的停止方法的
+            // 需要在合适的地方手动的调用loadmore.onBottomLoaded()这个函数来结束该方法。
+            this.$refs.loadmore.onBottomLoaded();
+            if (res.data.length > 0) {
+              res.data.forEach((element) => {
+                this.restaurants.push(element);
+              });
+              if(res.data.length < this.size) {
+                this.allLoaded = true;
+                this.bottomPullText = '没有更多数据了'
+              }
+            }else {
+              this.allLoaded = true;
+              this.bottomPullText = '没有更多数据了'
+            }
+          });
     },
   },
   components: {
     Swipe,
     SwipeItem,
+    Loadmore,
     FilterView,
     IndexShop,
   },
@@ -248,6 +302,7 @@ export default {
 .fixed-view.search-wrap {
   padding-top: 5px;
 }
+
 .mint-loadmore {
   height: calc(100% - 95px);
   overflow: auto;
