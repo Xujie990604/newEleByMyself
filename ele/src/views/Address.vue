@@ -1,6 +1,6 @@
 <template>
   <div class="address">
-    <Header :isLeft="true" title="选择收货地址" />
+    <my-header :isLeft="true" title="选择收货地址" />
     <div class="city-search">
       <div class="search">
         <span class="city" @click="$router.push('/city')">
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import Header from "../components/Header";
+import MyHeader from "../components/common/header/MyHeader";
 import Location from "../components/Location";
 
 import { debounce } from '../common/util';
@@ -86,7 +86,7 @@ export default {
     });
   },
   components: {
-    Header,
+    MyHeader,
     Location,
   },
 };

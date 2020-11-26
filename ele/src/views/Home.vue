@@ -14,7 +14,7 @@
 
     <!-- search -->
     <div class="search-wrap" :class="{ 'fixed-view': sortFixed }">
-      <div class="shop-search">
+      <div class="shop-search" @click="$router.push('/search')">
         <i class="fa fa-search"></i>
         搜索商家，商家名称
       </div>
