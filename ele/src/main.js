@@ -7,6 +7,8 @@ import axios from 'axios';
 import MintUI from 'mint-ui';
 import 'mint-ui/lib/style.css';
 
+// 引入better-scroll插件
+
 // 安装mint ui插件
 Vue.use(MintUI);
 // 引入加载动画

@@ -6,7 +6,6 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    // name: 'index',
     component: () => import('../views/Index.vue'),
     children: [
       {
@@ -62,13 +61,39 @@ const routes = [
     path: '/search',
     name: 'search',
     component: () => import('../views/Search')
+  },
+  {
+    path: '/shop', //改为使用动态匹配路由传参
+    component: () => import('../views/shop/Shop.vue'),
+    redirect: '/goods',
+    children: [
+      {
+        path: '/goods',
+        name: 'goods',
+        component: () => import('../views/shop/Goods')
+      },
+      {
+        path: '/comments',
+        name: 'comments',
+        component: () => import('../views/shop/Comments')
+      },
+      {
+        path: '/seller',
+        name: 'seller',
+        component: () => import('../views/shop/Seller')
+      }
+    ]
+  },
+  {
+    path: '*',
+    component: () => import("../views/NotFoundViews.vue")
   }
 ]
 
 const router = new VueRouter({
   routes,
   linkActiveClass: 'active',
-  mode: 'history', //使用history模式 必须要使用字符串的形式，不然会出问题
+  mode: 'history', //使用history模式 必须要使用字符串的形式，不然会出问题 
   // base: '/xujie/', //什么意思???基础路由，作用是什么
 })
 

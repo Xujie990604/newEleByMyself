@@ -1,12 +1,12 @@
 <template>
-    <div class="me">
-      饿哦的
+    <div class="seller">
+        Seller
     </div>
 </template>
 
 <script>
 export default {
-    name: 'Me',
+    name: 'Seller'
 }
 </script>
 

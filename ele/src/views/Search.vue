@@ -26,7 +26,8 @@
         </div>
       </div>
       <div v-else>
-        <search-index @click="shopItemClick" :data="result.restaurants" />
+        <!-- 不应该加在ul上，应该加在li上。并且使用路由来传参params -->
+        <search-index @click="$router.push('/shop')" :data="result.restaurants" />
         <search-index @click="shopItemClick" :data="result.words" />
       </div>
     </div>
@@ -90,7 +91,6 @@ export default {
   methods: {
     // mint ui组价的加载数据的方法
     loadMore() {
-      console.log(123);
       this.page++;
       this.$axios
         .post(`api/profile/restaurants/${this.page}/${this.size}`, this.data)

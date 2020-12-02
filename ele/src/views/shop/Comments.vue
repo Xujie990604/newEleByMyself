@@ -1,12 +1,12 @@
 <template>
-    <div class="me">
-      饿哦的
+    <div class="comments">
+        Comments
     </div>
 </template>
 
 <script>
 export default {
-    name: 'Me',
+    name: 'Comments'
 }
 </script>
 
