@@ -52,10 +52,19 @@ export default {
   },
   computed: {
     city() {
-      return (
+      // this.$store.getters.location默认值为{}
+      // this.$store.getters.location.addressComponent的值在axios没请求完之前是undefined
+      // this.$store.getters.location.addressComponent.city 在没请求完之前 == undefined.city undefined读取属性会报错
+      // 所以添加一个if判断
+      if(this.$store.getters.location.addressComponent === undefined) {
+        return "获取中"
+      }
+      else {
+        return (
         this.$store.getters.location.addressComponent.city ||
         this.$store.getters.location.addressComponent.province
       );
+      }
     }
   },
   watch: {

@@ -12,10 +12,7 @@
 export default {
     name: 'Location',
     props: {
-        address: {
-          type: String,
-          default: "tangshan"
-        }
+        address: String
     }
 }
 </script>

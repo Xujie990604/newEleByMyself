@@ -15,7 +15,7 @@ const state = {
 
 const getters = {
   location: state => state.location,
-  address: state => state.address
+  address: state => state.address,
 }
 
 const mutations = {
