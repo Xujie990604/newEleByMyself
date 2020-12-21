@@ -45,8 +45,7 @@ const routes = [
     component: () => import('../views/About.vue'),
     children: [
       {
-        path: 'first',//使用children属性进行书写路由的时候。不必再写上父路由的路径
-        // 在about路由的子路由first下面刷新。加载reset.css会在前面加上 /about
+        path: 'first',
         name: 'first',
         component: () => import('../views/First.vue')
       }
@@ -93,8 +92,8 @@ const routes = [
 const router = new VueRouter({
   routes,
   linkActiveClass: 'active',
-  mode: 'history', //使用history模式 必须要使用字符串的形式，不然会出问题 
-  // base: '/xujie/', //什么意思???基础路由，作用是什么
+  mode: 'history',
+  // base: '', //就是一个基础路径
 })
 
 // 是整个路由对象router上的方法，不是路由映射表routes上的方法

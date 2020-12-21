@@ -81,6 +81,10 @@
         </div>
       </my-scroll>
     </div>
+
+    <!-- 购物车 -->
+    <shop-cart :shopInfo="shopInfo" />
+
   </div>
 </template>
 
@@ -88,8 +92,8 @@
 import CartControll from "../../components/shops/CartControll.vue";
 
 import MyScroll from "../../components/common/scroll/MyScroll.vue";
+import ShopCart from './ShopCart.vue';
 export default {
-  components: { CartControll, MyScroll },
   name: "Goods",
   data() {
     return {
@@ -166,6 +170,7 @@ export default {
       this.scrollY = Math.abs(Math.round(pos.y));
     }
   },
+  components: { CartControll, MyScroll, ShopCart },
 };
 </script>
 

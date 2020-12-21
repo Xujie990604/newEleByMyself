@@ -21,6 +21,7 @@ export default {
     food: Object,
   },
   methods: {
+    // 因为是直接修改的是一个对象的属性，所以不需要向父组件提交时间也可以直接修改这个值
     decreaseCount() {
       this.food.count--;
     },
