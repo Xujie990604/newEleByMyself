@@ -60,7 +60,7 @@
                 <span>{{ item.description }}</span>
               </div>
               <!-- 内容下 -->
-              <div class="fooddetails" v-for="(food, i) in item.foods" :key="i">
+              <div class="fooddetails" v-for="(food, i) in item.foods" :key="i" @click="handleFood(food)">
                 <!-- 左 -->
                 <img :src="food.image_path" />
                 <!-- 右 -->
@@ -85,6 +85,8 @@
     <!-- 购物车 -->
     <shop-cart :shopInfo="shopInfo" />
 
+    <!-- 商品详情 -->
+    <food :food="selectFood" :isShow="showFood" @close="showFood = false" />
   </div>
 </template>
 
@@ -93,6 +95,7 @@ import CartControll from "../../components/shops/CartControll.vue";
 
 import MyScroll from "../../components/common/scroll/MyScroll.vue";
 import ShopCart from './ShopCart.vue';
+import Food from './Food.vue';
 export default {
   name: "Goods",
   data() {
@@ -100,6 +103,8 @@ export default {
       shopInfo: null,
       scrollY: 0, //右边滚动的y值
       listHeights: [], //12区的列表高度
+      selectFood: null,//当前被点击的food
+      showFood: false, //控制商品详情页面的显示
     };
   },
   computed: {
@@ -168,9 +173,14 @@ export default {
     // 监听滚动事件
     foodScroll(pos) {
       this.scrollY = Math.abs(Math.round(pos.y));
-    }
+    },
+    // 点击food进入商品的详情
+    handleFood(food) {
+      this.selectFood = food;
+      this.showFood = true;
+    },
   },
-  components: { CartControll, MyScroll, ShopCart },
+  components: { CartControll, MyScroll, ShopCart, Food },
 };
 </script>
 
