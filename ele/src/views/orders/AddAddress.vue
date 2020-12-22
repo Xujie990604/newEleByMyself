@@ -70,20 +70,22 @@ export default {
   name: "AddAddress",
   data() {
     return {
-      title: "添加地址",
+      title: "",
       tags: ["家", "学校", "公司"],
       sexs: ["先生", "女士"],
       addressInfo: {
         //用户输入的地址信息
-        tag: "",
-        sex: "",
-        address: "",
-        name: "",
-        phone: "",
-        bottom: "",
       },
       showSearch: false, //控制地址搜索部分的显示
     };
+  },
+  // 在路由跳转的时候调用
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // 因为在路由中传递的是对象， 刷新页面会丢失数据，所以要使用JSON的方法来转化一下
+      vm.addressInfo = JSON.parse(to.query.address);
+      vm.title = to.query.title;
+    });
   },
   methods: {
     // 选择家，公司， 学校的标签
@@ -111,9 +113,11 @@ export default {
         this.showMsg("请输入地址");
         return;
       }
-
-      // 存储数据的方法
-      this.addAddress()
+      if(this.title == "添加地址") {
+        this.addAddress()
+      }else{
+        this.editAddress()
+      }
     },
     // 提示信息
     showMsg(msg) {
@@ -132,6 +136,17 @@ export default {
       }).catch((err) => {
         console.log(err);
       });
+    },
+    // 编辑用户已有的信息
+    editAddress() {
+      // 提交完数据之后， 跳转到路由 myAddress
+      this.$axios.post(`/api/user/edit_address/${localStorage.login}/${this.addressInfo._id}`, this.addressInfo)
+      .then(res => {
+        this.$router.push("/myAddress")
+      })
+      .catch(err => {
+        console.log(err)
+      })
     }
   },
 };

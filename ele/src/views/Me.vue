@@ -70,7 +70,20 @@ export default {
       if(this.userInfo.myAddress.length > 0)  {
         this.$router.push("/myAddress")
       } else {
-        this.$router.push("/addAddress")
+        this.$router.push({
+          path: '/addAddress',
+          query: {
+            title: '添加地址',
+            address: JSON.stringify({
+              name: '',
+              sex: '',
+              phone: '',
+              address: '',
+              bottom: '',
+              tag: ''
+            })
+          }
+        })
       }
     }
   }
