@@ -1,19 +1,6 @@
-# ele
+# 高仿饿了么点餐系统
 
-## Project setup
-```
-npm install
-```
+## 使用到的技术栈
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+框架： Vue + Vuex + VueRouter + VueCli 全家桶
+插件： better-scroll滚动插件, axios网络请求插件, mint ui移动端的ui库, fontawesome图标库， 高德地图的定位API、

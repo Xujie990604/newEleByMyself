@@ -84,6 +84,16 @@ const routes = [
     ]
   },
   {
+    path: '/myAddress',
+    name: 'myAddress',
+    component: () => import('../views/orders/MyAddress.vue')
+  },
+  {
+    path: '/addAddress',
+    name: 'addAddress',
+    component: () => import('../views/orders/AddAddress.vue')
+  },
+  {
     path: '*',
     component: () => import("../views/NotFoundViews.vue")
   }

@@ -109,7 +109,8 @@ export default {
           })
           .then((res) => {
             console.log(res);
-            localStorage.setItem("login", true);
+            // 本地存储一个和当前登录手机号一一对应的user.id
+            localStorage.setItem("login", res.data.user._id);
             this.$router.push("/");
           })
           .catch((err) => {
