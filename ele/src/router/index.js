@@ -94,6 +94,11 @@ const routes = [
     component: () => import('../views/orders/AddAddress.vue')
   },
   {
+    path: '/settleMent',
+    name: 'settleMent',
+    component: () => import('../views/orders/SettleMent.vue')
+  },
+  {
     path: '*',
     component: () => import("../views/NotFoundViews.vue")
   }

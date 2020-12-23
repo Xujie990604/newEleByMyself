@@ -49,7 +49,7 @@
         <span v-if="isEmpty"
           >￥{{ shopInfo.rst.float_minimum_order_amount }}元起送</span
         >
-        <span v-else>去结算</span>
+        <span v-else @click="settleMent">去结算</span>
       </button>
     </div>
   </div>
@@ -106,6 +106,7 @@ export default {
     console.log(this.shopInfo);
   },
   methods: {
+    // 清除购物车中的商品
     clearFood() {
       this.shopInfo.recommend.forEach((recommend) => {
         recommend.items.forEach((item) => {
@@ -118,6 +119,14 @@ export default {
          food.count = 0;
         });
       });
+    },
+    // 去结算按钮
+    settleMent() {
+      this.$store.dispatch("setOrderInfo", {
+        shopInfo: this.shopInfo.rst,
+        selectFoods: this.selectFoods
+      });
+      this.$router.push("/settleMent")
     }
   }
 };

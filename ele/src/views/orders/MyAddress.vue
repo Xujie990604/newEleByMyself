@@ -74,6 +74,8 @@ export default {
     // 确认选用的地址
     setAddressInfo(address, index) {
         this.selectIndex = index;
+        this.$store.dispatch("setUserInfo", address);
+        this.$router.push('/settleMent')
     },
     // 编辑地址
     handleEdit(address) {

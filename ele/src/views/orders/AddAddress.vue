@@ -132,7 +132,12 @@ export default {
       this.$axios.post(`api/user/add_address/${localStorage.login}`, this.addressInfo)
       .then((result) => {
         // 添加成功跳转到路由 myAddress
-        this.$router.push("/myAddress")
+        if(!this.$store.getters.userInfo) {
+          this.$store.dispatch('setUserInfo', this.addressInfo)
+          this.$router.push('/settleMent');
+        }else {
+          this.$router.push("/myAddress")
+        }
       }).catch((err) => {
         console.log(err);
       });

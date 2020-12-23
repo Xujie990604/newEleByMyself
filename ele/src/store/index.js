@@ -4,18 +4,24 @@ import Vuex from 'vuex'
 Vue.use(Vuex);
 
 const types = {
-  SET_LOCATION: 'SET_LOCATION',
-  SET_ADDRESS: 'SET_ADDRESS'
+  SET_LOCATION: 'SET_LOCATION', //是一个对象包含着很多东西
+  SET_ADDRESS: 'SET_ADDRESS',//是一个字符串地址
+  ORDER_INFO: 'ORDER_INFO', //在结算页面需要使用的 有关购物车中的商品信息
+  USER_INFO: 'USER_INFO', //在结算页面需要使用的，有关用户的数据
 }
 
 const state = {
   location: {},
-  address: ""
+  address: "",
+  orderInfo: null,
+  userInfo: null
 }
 
 const getters = {
   location: state => state.location,
   address: state => state.address,
+  orderInfo: state => state.orderInfo,
+  userInfo: state => state.userInfo
 }
 
 const mutations = {
@@ -32,7 +38,22 @@ const mutations = {
     } else {
       state.address = "";
     }
-  }
+  },
+  [types.ORDER_INFO](state, orderInfo) {
+    if (orderInfo) {
+      state.orderInfo = orderInfo;
+    } else {
+      state.orderInfo = null;
+    }
+  },
+  [types.USER_INFO](state, userInfo) {
+    if (userInfo) {
+      state.userInfo = userInfo;
+    } else {
+      state.userInfo = null;
+    }
+  },
+
 }
 
 const actions = {
@@ -41,6 +62,12 @@ const actions = {
   },
   setAddress({commit}, address) {
     commit(types.SET_ADDRESS, address)
+  },
+  setOrderInfo({ commit }, orderInfo) {
+    commit(types.ORDER_INFO, orderInfo)
+  },
+  setUserInfo({ commit }, userInfo) {
+    commit(types.USER_INFO, userInfo)
   }
 }
 
