@@ -1,6 +1,9 @@
 <template>
   <div class="settle-ment">
+      <!-- 顶部的header -->
     <my-header :isLeft="true" title="确认订单" />
+
+    <!-- 订单的信息主题 -->
     <div class="view-body">
       <div>
         <!-- 收货地址 -->
@@ -47,6 +50,12 @@
         <table-ware :isShow="showTableWare" @close="showTableWare = false"  />
       </div>
     </div>
+
+    <!-- 底部 -->
+    <footer class="action-bar">
+        <span>￥{{totalPrice}}</span>
+        <button @click="handlePay">去支付</button>
+    </footer>
   </div>
 </template>
 
@@ -56,6 +65,8 @@ import CartGroup from '../../components/orders/CartGroup.vue';
 import Delivery from '../../components/orders/Delivery.vue';
 import CartItem from '../../components/orders/CartItem.vue';
 import TableWare from '../../components/orders/TableWare.vue';
+
+import { Toast } from 'mint-ui';
 
 import { getUserAddress } from "../../network/address.js";
 
@@ -100,6 +111,7 @@ export default {
         }
       });
     },
+    // 如果当前用户没有添加过数据的话， 进入添加地址的页面
     addAddress() {
       this.$router.push({
         path: "/addAddress",
@@ -116,6 +128,18 @@ export default {
         },
       });
     },
+    // 支付按钮
+    handlePay() {
+        if(!this.userInfo){
+            Toast({
+                message: "请选择收货地址",
+                position: "bottom",
+                duration: 2000
+            })
+            return;
+        }
+        this.$router.push('/pay');
+    }
   },
 };
 </script>
