@@ -2,7 +2,7 @@
   <div class="settle-ment">
     <my-header :isLeft="true" title="确认订单" />
     <div class="view-body">
-      <div class="">
+      <div>
         <!-- 收货地址 -->
         <section class="cart-address">
           <p class="title">
@@ -25,10 +25,26 @@
           </p>
           <h2 v-if="userInfo" class="address-name">
             <span>{{ userInfo.name }}</span>
-            <span v-if="userInfo.sex">({{ userInfo.sex }})</span>
+            <span v-if="userInfo.sex"> ({{ userInfo.sex }})</span>
             <span class="phone">{{ userInfo.phone }}</span>
           </h2>
         </section>
+
+        <!-- 送达时间 -->
+        <delivery :shopInfo="orderInfo.shopInfo"/>
+
+        <!-- 商品内容展示 -->
+        <cart-group :orderInfo="orderInfo" :totalPrice="totalPrice"/>
+
+        <!-- 备注信息 -->
+        <section class="checkout-section">
+            <cart-item title="餐具份数" :subHead="remarkInfo.tableware || '未选择'" @click="showTableWare = true" />
+            <cart-item title="订单备注" :subHead="remarkInfo.remark || '口味 偏好'" @click="$router.push('/remark')" />
+            <cart-item title="发票信息" subHead="不需要开发票" />
+        </section>
+
+        <!-- 显示几份餐具 -->
+        <table-ware :isShow="showTableWare" @close="showTableWare = false"  />
       </div>
     </div>
   </div>
@@ -36,19 +52,34 @@
 
 <script>
 import MyHeader from "../../components/common/header/MyHeader.vue";
+import CartGroup from '../../components/orders/CartGroup.vue';
+import Delivery from '../../components/orders/Delivery.vue';
+import CartItem from '../../components/orders/CartItem.vue';
+import TableWare from '../../components/orders/TableWare.vue';
 
 import { getUserAddress } from "../../network/address.js";
+
 export default {
-  components: { MyHeader },
+  components: { MyHeader, Delivery, CartGroup, CartItem, TableWare },
   name: "SettleMent",
   data() {
     return {
       haveAddress: false,
+      showTableWare: false, //控制餐具选择的显示
     };
   },
   computed: {
     userInfo() {
       return this.$store.getters.userInfo;
+    },
+    orderInfo() {
+        return this.$store.getters.orderInfo;
+    },
+    totalPrice() {
+        return this.$store.getters.totalPrice;
+    },
+    remarkInfo() {
+        return this.$store.getters.remarkInfo;
     },
   },
   beforeRouteEnter(to, from, next) {

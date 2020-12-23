@@ -8,20 +8,37 @@ const types = {
   SET_ADDRESS: 'SET_ADDRESS',//是一个字符串地址
   ORDER_INFO: 'ORDER_INFO', //在结算页面需要使用的 有关购物车中的商品信息
   USER_INFO: 'USER_INFO', //在结算页面需要使用的，有关用户的数据
+  REMARK_INFO: 'REMARK_INFO',//在结算页面需要使用的， 有关订单的备注信息
 }
 
 const state = {
   location: {},
   address: "",
   orderInfo: null,
-  userInfo: null
+  userInfo: null,
+  remarkInfo: {
+    tableWare: '',
+    remark: ''
+  }
 }
 
 const getters = {
   location: state => state.location,
   address: state => state.address,
   orderInfo: state => state.orderInfo,
-  userInfo: state => state.userInfo
+  userInfo: state => state.userInfo,
+  totalPrice: state => {
+    let price = 0;
+    if(state.orderInfo) {
+      const selectFoods = state.orderInfo.selectFoods;
+      selectFoods.forEach(food => {
+        price += (food.activity.fixed_price * food.count);
+      });
+      price += state.orderInfo.shopInfo.float_delivery_fee;
+    }
+    return price;
+  },
+  remarkInfo: state => state.remarkInfo,
 }
 
 const mutations = {
@@ -53,6 +70,13 @@ const mutations = {
       state.userInfo = null;
     }
   },
+  [types.REMARK_INFO](state, remarkInfo) {
+    if (remarkInfo) {
+      state.remarkInfo = remarkInfo;
+    } else {
+      state.remarkInfo = null;
+    }
+  },
 
 }
 
@@ -68,6 +92,9 @@ const actions = {
   },
   setUserInfo({ commit }, userInfo) {
     commit(types.USER_INFO, userInfo)
+  },
+  setRemarkInfo({ commit }, remarkInfo) {
+    commit(types.REMARK_INFO, remarkInfo)
   }
 }
 
