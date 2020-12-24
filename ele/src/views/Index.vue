@@ -1,6 +1,8 @@
 <template>
     <div class="index">
-        <router-view></router-view>
+        <keep-alive>
+            <router-view />
+        </keep-alive>
         <tabber :data="tabberData"></tabber>
     </div>
 </template>

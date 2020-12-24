@@ -1,34 +1,36 @@
 <template>
   <div class="pay">
-      <!-- header -->
+    <!-- header -->
     <my-header title="在线支付" />
     <!--  -->
-    <div v-if="orderInfo" class="main" >
-        <!-- 支付的剩余时间 -->
+    <div v-if="orderInfo" class="main">
+      <!-- 支付的剩余时间 -->
       <div class="tip">
         <p class="countdown-title">支付剩余时间</p>
         <h3 class="countdown-text">{{ countDown }}</h3>
       </div>
       <!--  -->
       <section class="home">
-          <ul class="list info-list">
-              <li>
-                  <span class="order-name">{{orderInfo.shopInfo.name}}</span>
-                  <span class="text-highlight">￥{{totalPrice}}</span>
-              </li>
-          </ul>
-          <div class="title">在线支付</div>
-          <ul class="list payment-list">
-              <li class="payment-list-item">
-                  <div class="icon">
-                      <img src="../assets/wechart.jpg">
-                      <span>微信</span>
-                  </div>
-                  <i class="fa fa-check-circle selected"></i>
-              </li>
-          </ul>
+        <ul class="list info-list">
+          <li>
+            <span class="order-name">{{ orderInfo.shopInfo.name }}</span>
+            <span class="text-highlight">￥{{ totalPrice }}</span>
+          </li>
+        </ul>
+        <div class="title">在线支付</div>
+        <ul class="list payment-list">
+          <li class="payment-list-item">
+            <div class="icon">
+              <img src="../assets/wechart.jpg" />
+              <span>微信</span>
+            </div>
+            <i class="fa fa-check-circle selected"></i>
+          </li>
+        </ul>
       </section>
-      <button class="btn-submit">确认支付</button>
+      <button :disabled="timeOut" class="btn-submit" @click="pay">
+        确认支付
+      </button>
     </div>
   </div>
 </template>
@@ -41,6 +43,8 @@ export default {
   data() {
     return {
       countDown: "00:15:00",
+      timer: null,
+      timeOut: false,
     };
   },
   computed: {
@@ -49,6 +53,77 @@ export default {
     },
     totalPrice() {
       return this.$store.getters.totalPrice;
+    },
+    userInfo() {
+      return this.$store.getters.userInfo;
+    },
+    remarkInfo() {
+      return this.$store.getters.remarkInfo;
+    },
+  },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      vm.countTimeDown();
+    });
+  },
+  methods: {
+    // 倒计时的方法
+    countTimeDown() {
+      let minute = 14;
+      let second = 59;
+
+      this.timer = setInterval(() => {
+        second--;
+        if (second == "00" && minute == "00") {
+          this.countDown = "订单已超时";
+          clearInterval(this.timer);
+          this.timeOut = true;
+          return;
+        }
+
+        if (second == "00") {
+          second = 59;
+          minute--;
+
+          if (minute < 10) {
+            minute = "0" + minute;
+          }
+        }
+
+        if (second < 10) {
+          second = "0" + second;
+        }
+
+        this.countDown = "00:" + minute + ":" + second;
+      }, 1000);
+    },
+    // 点击支付按钮
+    pay() {
+      const data = {
+        body: "徐杰",
+        out_trade_no: new Date().getTime().toString(),
+        total_fee: 1, //金额，以分为单位
+      };
+      alert("进入到pay方法中");
+      alert("支付成功");
+      this.addOrder();
+      // 必须在微信客户端才能调用，所以给关闭了
+      // this.$axios.post("/wxzf/example/jsapi.php", data)
+    },
+    // 向后端提交订单数据， 跳转路由
+    addOrder() {
+      let orderList = {
+        orderInfo: this.orderInfo,
+        userInfo: this.userInfo,
+        totalPrice: this.totalPrice,
+        remarkInfo: this.remarkInfo
+      };
+
+      this.$axios.post(`/api/user/add_order/${localStorage.login}`, orderList)
+      .then(res => {
+        console.log(res.data);
+        this.$router.push('/order')
+      })
     },
   },
 };
